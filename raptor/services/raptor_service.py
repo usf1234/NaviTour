@@ -13,7 +13,11 @@ from raptor.output_translation import load_translations, print_legs, print_segme
 from raptor.services.stop_matcher import StopMatcher
 
 
-translations_path =  r"D:\G4\graduation project\NaviTour\data\translations.txt"
+import os as _os
+translations_path = _os.path.join(
+    _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))),
+    "data", "translations.txt"
+)
 def run_raptor_from_assistant_json(network ,assistant_json, departure_time="08:00:00"):
     """
     Runs RAPTOR from Cairo assistant JSON.
