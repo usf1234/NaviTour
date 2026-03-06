@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Live Tracking</title>
+
+<link rel="stylesheet"
+ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+#map {
+    height: 100vh;
+    width: 100%;
+}
+</style>
+</head>
+
+<body>
+
+<h3 style="text-align:center">متابعة رحلتك مباشرة 📍</h3>
+<div id="map"></div>
+
+<script>
+
+// إنشاء الخريطة
+var map = L.map('map').setView([30.0444, 31.2357], 12);
+
+// طبقة الخريطة
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+}).addTo(map);
+
+var marker = null;
+
+// أهم جزء في المشروع كله 👇
+navigator.geolocation.watchPosition(
+    function(position){
+
+        var lat = position.coords.latitude;
+        var lon = position.coords.longitude;
+
+        console.log("My location:", lat, lon);
+
+        // إرسال للسيرفر
+        fetch("/location", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({lat: lat, lon: lon})
+        });
+
+        // تحريك الخريطة لموقعي
+        map.setView([lat, lon], 15);
+
+        // رسم أو تحديث النقطة
+        if(marker == null){
+            marker = L.marker([lat, lon]).addTo(map)
+            .bindPopup("أنت هنا").openPopup();
+        } else {
+            marker.setLatLng([lat, lon]);
+        }
+
+    },
+    function(error){
+        alert("Location error: " + error.message);
+    },
+    {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000
+    }
+);
+
+</script>
+
+</body>
+</html>
